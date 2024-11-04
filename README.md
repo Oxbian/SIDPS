@@ -30,9 +30,36 @@ docker run -d --name redis-stack -p 6379:6379 -p 8001:8001 redis/redis-stack:lat
 
 *Installation interface web & noyau de l'IDS*
 
+## Structure de la base de données Redis
+
+La base de données Redis est structurée de la façon suivante:  
+- stream `logs:alertes` contenant toutes les alertes envoyés par le noyau de l'IDPS  
+- stream `logs:correlations` contenant toutes les corrélations d'alertes, avec un message de corrélation et les alertes corrélées  
+  
+Ces deux streams suivent la norme CEF, mais sont structurées sous la forme d'objet et non d'une seule chaine de caractère. Afin de faciliter le parsing par la suite.  
+
+## Interface de tests d'alertes
+
+Un script python `tests/cef-generator.py` permet de générer des alertes CEF dans la base de données Redis.  
+Ce script peut être utile pour le développement d'interface d'affichage des alertes. Pour l'utiliser il faut une base de donnée redis, et mettre les identifiants dans le script.  
+De plus, ce script à besoin de la librairie `redis` pour pouvoir ajouter / faire des requêtes à la base de données Redis.  
+  
+Pour cela, utiliser les commandes suivantes:  
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install -r requirements.txt
+```
+
+Puis executer le script `tests/cef-generator.py` avec le python3 du l'environnement virtuel.
+
+```bash
+.venv/bin/python3 tests/cef-generator.py
+```
+
 ## TODO
 
-- Choix du format d'enregistrement des données dans Redis
-- Noyau d'analyse de l'IDS
-- Interface web pour visualiser les alertes / rechercher dedans
+- Noyau d'analyse de l'IDS  
+- Interface web pour visualiser les alertes / rechercher dedans  
 - Moteur de corrélation des alertes (récupération + renvoi dans Redis). 
