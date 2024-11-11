@@ -47,10 +47,16 @@ Puis executer le script `tests/cef-generator.py` avec le python3 du l'environnem
 Ce projet étant réaliser dans le cadre d'un cours à l'université, une démonstration est donc nécessaire.  
 
 Ci-dessous, le schéma de l'architecture réseau de la démonstration:
-![Architecture réseau démo](Demo/architecture.png)
+![Architecture réseau démo](Demo/architecture.png)  
 
-Cette démonstration peut être déployer facilement grâce à un docker-compose `Demo/docker-compose.yml`.
+Cette démonstration peut être déployer facilement grâce à un docker-compose `Demo/docker-compose.yml`.  
 
+Pour lancer cette démonstration, il faudra avoir `docker` & `docker compose` d'installer. Puis executer les commandes suivantes:
+
+```bash
+cd Demo/
+docker compose up -d
+```
 
 ## TODO
 

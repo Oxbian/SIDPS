@@ -2,7 +2,9 @@ version: "3.8"
 services:
   # Attaquant 1
   atk1:
-    image: python:alpine3.20
+    build:
+      context: Dockerfiles/.
+      dockerfile: Dockerfile.attaquant
     container_name: attaquant1
     command: sleep infinity
     networks:
@@ -12,7 +14,9 @@ services:
 
   # IDPS
   idps:
-    image: python:alpine3.20
+    build:
+      context: Dockerfiles/.
+      dockerfile: Dockerfile.idps
     container_name: idps
     command: sleep infinity
     cap_add:
@@ -27,7 +31,9 @@ services:
 
   # Cible
   cible:
-    image: python:alpine3.20
+    build:
+      context: Dockerfiles/.
+      dockerfile: Dockerfile.cible
     container_name: cible
     command: sleep infinity
     networks:
@@ -37,7 +43,9 @@ services:
 
   # Attaquant 2
   atk2:
-    image: python:alpine3.20
+    build:
+      context: Dockerfiles/.
+      dockerfile: Dockerfile.attaquant
     container_name: attaquant2
     command: sleep infinity
     networks:
@@ -45,16 +53,19 @@ services:
         ipv4_address: 172.20.2.4
     restart: unless-stopped
 
+  # Sonde IDS
   ids:
-    image: python:alpine3.20
+    build:
+      context: Dockerfiles/.
+      dockerfile: Dockerfile.ids
     container_name: ids
     command: sleep infinity
     cap_add:
       - NET_ADMIN
       - NET_RAW
-    networks:
-      net_private:
-        ipv4_address: 172.20.2.5
+  #networks:
+    #net_private:
+      #ipv4_address: 172.20.2.5
     # Network mode host obligatoire pour que la sonde puisse sniffer le réseau
     network_mode: host
     restart: unless-stopped
@@ -74,11 +85,11 @@ services:
 networks:
   net_public:
     driver: bridge
-     ipam:
+    ipam:
       config:
         - subnet: 172.20.1.0/24
   net_private:
     driver: bridge
-     ipam:
+    ipam:
       config:
         - subnet: 172.20.2.0/24
