@@ -26,7 +26,7 @@ La base de données SQL est structurée de la façon suivante:
 
 Un script python `tests/cef-generator.py` permet de générer des alertes CEF dans la base de données SQL.  
 Ce script peut être utile pour le développement d'interface d'affichage des alertes. Pour l'utiliser il faut une base de donnée sql, et mettre les identifiants dans le script.  
-De plus, ce script à besoin de la librairie `sql` pour pouvoir ajouter / faire des requêtes à la base de données Redis.  
+De plus, ce script à besoin de la librairie `sql` pour pouvoir ajouter / faire des requêtes à la base de données MySQL.  
   
 Pour cela, utiliser les commandes suivantes:  
 
@@ -56,4 +56,4 @@ Cette démonstration peut être déployer facilement grâce à un docker-compose
 
 - Noyau d'analyse de l'IDS  
 - Interface web pour visualiser les alertes / rechercher dedans  
-- Moteur de corrélation des alertes (récupération + renvoi dans Redis). 
+- Moteur de corrélation des alertes (récupération + renvoi dans MySQL). 
