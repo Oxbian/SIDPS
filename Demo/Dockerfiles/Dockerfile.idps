@@ -6,7 +6,14 @@ RUN apk -U upgrade && \
 RUN pip install scapy
 
 # Copier le script de l'idps
-#COPY idps.py /idps.py
+WORKDIR /app
 
-# Lancer le script de détection
-#CMD ["python", "/idps.py"]
+# Copier le contenu du répertoire 'idps' du contexte de build vers '/app/idps' dans le conteneur
+COPY idps /app/idps
+
+# Autres commandes nécessaires pour ton projet
+# Par exemple, pour installer des dépendances :
+# RUN pip install -r /app/idps/requirements.txt (si applicable)
+
+# Commande par défaut
+CMD ["python", "/app/idps/main.py"]

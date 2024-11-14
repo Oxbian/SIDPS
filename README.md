@@ -62,4 +62,4 @@ docker compose up -d
 
 - Noyau d'analyse de l'IDS  
 - Interface web pour visualiser les alertes / rechercher dedans  
-- Moteur de corrélation des alertes (récupération + renvoi dans MySQL). 
+- Moteur de corrélation des alertes (récupération + renvoi dans MySQL).

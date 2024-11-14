@@ -3,8 +3,8 @@ services:
   # Attaquant 1
   atk1:
     build:
-      context: Dockerfiles/.
-      dockerfile: Dockerfile.attaquant
+      context: ..
+      dockerfile: Demo/Dockerfiles/Dockerfile.attaquant
     container_name: attaquant1
     command: sleep infinity
     networks:
@@ -15,8 +15,8 @@ services:
   # IDPS
   idps:
     build:
-      context: Dockerfiles/.
-      dockerfile: Dockerfile.idps
+      context: ..
+      dockerfile: Demo/Dockerfiles/Dockerfile.idps
     container_name: idps
     command: sleep infinity
     cap_add:
