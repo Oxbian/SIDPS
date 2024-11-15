@@ -1,0 +1,39 @@
+<!-- filtres -->
+<form class="row g-3" method="POST">
+
+    <div class="col-auto">
+      <select class="form-select" aria-label="Choisir une date" name="date">
+        <option selected value="">Année</option>
+        <?php for ($i = 1990; $i < 2020; $i++) : ?>
+          <option value="<?php echo $i; ?>"><?php echo $i; ?></option>
+        <?php endfor; ?>
+      </select>
+    </div>
+
+    <div class="col-auto">
+      <select class="form-select" aria-label="Chosisir une gravité" name="gravité">
+        <option selected value="">Gravité</option>
+        <?php
+        $especesByType = $db->getAlertsByGravite();
+        foreach ($especesByType as $espece) : ?>
+          <option value="<?php echo $espece->Getespece(); ?>"><?php echo $espece->Getespece(); ?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+
+    <!-- <div class="col-auto">
+      <select class="form-select" aria-label="Chosisir une zone" name="zone">
+        <option selected value="">Zone</option>
+
+        <?php
+        // $zonesEchouage = $db->getZonesEchouage();
+        // foreach ($zonesEchouage as $zone) : ?>
+          <option value="<?php //echo $zone->Getzone(); ?>"><?php// echo $zone->Getzone(); ?></option>
+        <?php //endforeach; ?>
+      </select>
+    </div> -->
+
+    <div class="col-auto ms-auto me-0">
+      <button type="submit" class="btn btn-primary mb-3">Filtrer</button>
+    </div>
+  </form>

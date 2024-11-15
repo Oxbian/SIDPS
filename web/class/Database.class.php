@@ -8,7 +8,7 @@ class Database
     private $db_host;
     private $pdo;
 
-    public function __construct($db_name = "", $db_user = '', $db_pass = '', $db_host = 'localhost')
+    public function __construct($db_name = "sidps", $db_user = 'sidps', $db_pass = 'sidps', $db_host = 'localhost')
     {
         $this->db_name = $db_name;
         $this->db_user = $db_user;
@@ -36,7 +36,7 @@ class Database
     // TOCHANGE  
     public function getnbAlerts()
     {
-        $sql = 'SELECT COUNT(*) AS nb_alerts FROM alerts';
+        $sql = 'SELECT COUNT(*) AS nb_alerts FROM alertes';
 
         $sth = $this->getPDO()->prepare($sql);
         $sth->execute();
@@ -60,7 +60,7 @@ class Database
         $decalage = ($page - 1) * $limit;
 
         $sql = 'SELECT *
-        FROM alerts ';
+        FROM alertes ';
 
         if ($filters != null) {
             foreach ($filters as $key => $value) {
@@ -74,9 +74,9 @@ class Database
 
         // TODO : edit filters
         if ($filters != null) {
-            if ($filters['date'] != '') $sth->bindParam('date', $filters['date']);
-            if ($filters['espece'] != '') $sth->bindParam('espece', $filters['espece']);
-            if ($filters['zone'] != '') $sth->bindParam('zone', $filters['zone']);
+            if ($filters['event_gravite'] != '') $sth->bindParam('event_gravite', $filters['event_gravite']);
+            if ($filters['device_product'] != '') $sth->bindParam('device_product', $filters['device_product']);
+            // if ($filters['zone'] != '') $sth->bindParam('zone', $filters['zone']);
         }
         $sth->bindParam(':limit', $limit, PDO::PARAM_INT);
         $sth->bindParam(':offset', $decalage, PDO::PARAM_INT);
@@ -89,7 +89,7 @@ class Database
     {
         $whereArgs = [];
         $sql = 'SELECT *
-        FROM alerts ';
+        FROM alertes ';
 
         if ($filters != null) {
             foreach ($filters as $key => $value) {
@@ -108,11 +108,11 @@ class Database
         return $sth->fetchAll(PDO::FETCH_CLASS, 'Alerts');
     }
 
-    public function getAlertsByGravite()
+    public function getDevices()
     {
-        $sql = 'SELECT gravite
-        FROM alerts
-        GROUP BY gravite';
+        $sql = 'SELECT device_product
+        FROM alertes
+        GROUP BY device_product';
 
         $sth = $this->getPDO()->prepare($sql, [PDO::ATTR_CURSOR => PDO::CURSOR_FWDONLY]);
         $sth->execute();
@@ -130,9 +130,9 @@ class Database
             foreach ($filters as $key) {
                 $whereArgs[] = $key;
             }
-            $sql = 'SELECT gravite, COUNT(*) as nbbygravite FROM Alerts where date>='. implode(' AND ', $whereArgs).' GROUP BY gravite';
+            $sql = 'SELECT gravite, COUNT(*) as nbbygravite FROM alertes where date>='. implode(' AND ', $whereArgs).' GROUP BY gravite';
         }else {
-            $sql = 'SELECT gravite, COUNT(*) as nbbygravite FROM Alerts GROUP BY gravite';
+            $sql = 'SELECT gravite, COUNT(*) as nbbygravite FROM alertes GROUP BY gravite';
 
         }
         
