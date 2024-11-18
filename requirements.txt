@@ -1,2 +1,2 @@
-hiredis==3.0.0
-redis==5.2.0
+mysql-connector-python==9.1.0
+scapy=2.6.1

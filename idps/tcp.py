@@ -17,18 +17,18 @@ class TCP:
             self.packets[ip_src] = []
 
         if flags == "S":
-            self.packets[ip_src].append([port_src, ip_dst, port_dst, flags, timestamp])
+            self.packets[ip_src].append([port_src, ip_dst, port_dst, [flags], timestamp])
             return
 
         elif flags == "SA":
             i = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S", True)
 
             if i is not None:
-                self.packets[ip_dst][i][3] = "SA"
+                self.packets[ip_dst][i][3].append("SA")
                 self.packets[ip_dst][i][4] = timestamp
                 return
             else:
-                self.packets[ip_src].append([port_src, ip_dst, port_dst, flags, timestamp])
+                self.packets[ip_src].append([port_src, ip_dst, port_dst, [flags], timestamp])
                 return
 
         elif flags == "A":
@@ -37,11 +37,11 @@ class TCP:
                 i = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "R", True)
 
             if i is not None:
-                self.packets[ip_src][i][3] = "A"
+                self.packets[ip_src][i][3].append("A")
                 self.packets[ip_src][i][4] = timestamp
                 return
             else:
-                self.packets[ip_src].append([port_src, ip_dst, port_dst, flags, timestamp])
+                self.packets[ip_src].append([port_src, ip_dst, port_dst, [flags], timestamp])
                 return
 
         elif flags == "RA":
@@ -51,11 +51,11 @@ class TCP:
                 i = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S")
 
             if i is not None:
-                self.packets[ip_src][i][3] = "RA"
+                self.packets[ip_src][i][3].append("RA")
                 self.packets[ip_src][i][4] = timestamp
                 return
             else:
-                self.packets[ip_src].append([port_src, ip_dst, port_dst, flags, timestamp])
+                self.packets[ip_src].append([port_src, ip_dst, port_dst, [flags], timestamp])
                 return
 
         elif flags == "R":
@@ -65,11 +65,11 @@ class TCP:
                 i = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S")
 
             if i is not None:
-                self.packets[ip_src][i][3] = "R"
+                self.packets[ip_src][i][3].append("R")
                 self.packets[ip_src][i][4] = timestamp
                 return
             else:
-                self.packets[ip_src].append([port_src, ip_dst, port_dst, flags, timestamp])
+                self.packets[ip_src].append([port_src, ip_dst, port_dst, [flags], timestamp])
                 return
 
     def find_packet_to_replace(self, ip_src, port_src, ip_dst, port_dst, flags, reverse=False):
@@ -78,8 +78,11 @@ class TCP:
             ip_src, ip_dst = ip_dst, ip_src
             port_src, port_dst = port_dst, port_src
 
+        if ip_src not in self.packets.keys():
+            return None
+
         for i, [p_s, ip_d, p_d, f, stamp] in enumerate(self.packets[ip_src]):
-            if p_s == port_src and ip_d == ip_dst and p_d == port_dst and f == flags:
+            if p_s == port_src and ip_d == ip_dst and p_d == port_dst and f in flags:
                 return i
         return None
 
@@ -110,9 +113,11 @@ class TCP:
         current_timestamp = time.time()
         for ip in list(self.packets.keys()):
             for packet in self.packets[ip]:
-                if packet[3] == flag and packet[4] >= current_timestamp - time_treshold:
+                if flag in packet[3] and packet[4] >= current_timestamp - time_treshold:
                     count += 1
         return count
 
     def __getitem__(self, src_ip):
+        """Retourne la liste des paquets liés à une adresse IP, pour du déboggage"""
+
         return self.packets.get(src_ip, None)

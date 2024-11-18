@@ -3,13 +3,16 @@ FROM python:alpine3.20
 # Installation des paquets nécessaires pour scapy
 RUN apk -U upgrade && \
     apk add --no-cache libpcap libpcap-dev gcc musl-dev libffi-dev
-RUN pip install scapy
+RUN pip install scapy mysql-connector-python
 
 # Copier le script de l'idps
 WORKDIR /app
 
 # Copier le contenu du répertoire 'idps' du contexte de build vers '/app/idps' dans le conteneur
 COPY idps /app/idps
+
+# Copie du fichier de configuration
+COPY config.json /app/config.json
 
 # Autres commandes nécessaires pour ton projet
 # Par exemple, pour installer des dépendances :

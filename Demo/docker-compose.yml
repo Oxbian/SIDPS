@@ -56,8 +56,8 @@ services:
   # Sonde IDS
   ids:
     build:
-      context: Dockerfiles/.
-      dockerfile: Dockerfile.ids
+      context: ..
+      dockerfile: Demo/Dockerfiles/Dockerfile.ids
     container_name: ids
     command: sleep infinity
     cap_add:
@@ -72,11 +72,14 @@ services:
 
   # BDD d'alertes
   alert_db:
-    image: mysql:5.7
+    build:
+      context: ..
+      dockerfile: Demo/Dockerfiles/Dockerfile.db
     container_name: alert_db
     environment:
       MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: alert_db
+    ports:
+      - "3306:3306"
     networks:
       net_private:
         ipv4_address: 172.20.2.10

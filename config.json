@@ -1,0 +1,13 @@
+{
+	"rules_dirpath": "/app/idps/rules",
+	"ifaces": ["eth0", "eth1"],
+	"db_host": "172.20.2.10",
+	"db_database": "sidps",
+	"db_user": "sidps",
+	"db_password": "SUPERPASSWORD",
+	"db_port": "3306",
+	"synscan_time": 180,
+	"synscan_count": 5,
+	"tcpconnectscan_time": 180,
+	"tcpconnectscan_count": 5
+}
