@@ -9,44 +9,61 @@ class Database:
         self.conn = mysql.connector.connect(host=config["db_host"], database=config["db_database"], user=config["db_user"], password=config["db_password"], port=config["db_port"])
         self.config = config
 
-    def send_alert(self, alert):
+    def send_alert(self, date_alert = None, agent_severity = None, device_event_class_id = None, 
+                   name = None, src = None, dst = None, dpt = None, spt = None, msg = None,
+                   proto = None, bytesin = None, bytesout = None, reason = None, act = None):
         """Ajoute une alerte dans la base de données
-        @param alert: Alerte à rajouter dans la BDD"""
+        @param date_alert: Timestamp de l'alerte
+        @param agent_severity: Criticité de l'alerte (0 - 10)
+        @param device_event_class_id: Identifiant de signature, pour le moteur de corrélation
+        @param name: Nom descriptif de l'alerte
+        @param src: Adresse IP source
+        @param dst: Adresse IP destination
+        @param dpt: Port de destination
+        @param spt: Port source
+        @param msg: Champ de texte pour des notes ou commentaires additionnels
+        @param proto: Protocol couche 4 (réseau) utilisé
+        @param bytesin: Quantité de bytes (8 bits ici) entrants
+        @param bytesout: Quantité de bytes (8 bits ici) sortants
+        @param reason: Description de la raison de l'alerte
+        @param act: Action prise en réponse de l'alerte
+        """
 
         try:
             cursor = self.conn.cursor()
             sql_query = """
             INSERT INTO alertes (
-                cef_version, date_alerte, event_gravite, device_product,
-                device_vendor, device_version, alerte_name, sourceAddress,
-                destinationAddress, destinationPort, sourcePort, protocol,
-                applicationProtocol, reason, action, commentaire
+                cef_version, date_alerte, agent_severity, device_event_class_id,
+                device_product, device_vendor, device_version, name, dst, src,
+                dpt, spt, msg, proto, bytesin, bytesout, reason, act
             ) VALUES (
-                %(cef_version)s, %(date_alerte)s, %(event_gravite)s, %(device_product)s,
-                %(device_vendor)s, %(device_version)s, %(alerte_name)s, %(src)s,
-                %(dst)s, %(destinationPort)s, %(sourcePort)s, %(protocol)s,
-                %(applicationProtocol)s, %(reason)s, %(action)s, %(commentaire)s
+                %(cef_version)s, %(date_alerte)s, %(agent_severity)s, %(device_event_class_id)s,
+                %(device_product)s, %(device_vendor)s, %(device_version)s, %(name)s, %(dst)s, 
+                %(src)s, %(dpt)s, %(spt)s, %(msg)s, %(proto)s, %(bytesin)s, %(bytesout)s,
+                %(reason)s, %(act)s
             );
             """
 
             # Paramètres pour la requête SQL
             params = {
-                "cef_version": alert["CEF"],
-                "date_alerte": alert["datetime"],
-                "event_gravite": alert["agent_severity"],
-                "device_product": alert["Device Product"],
-                "device_vendor": alert["Device Vendor"],
-                "device_version": alert["Device Version"],
-                "alerte_name": alert["name"],
-                "src": alert["src"],
-                "dst": alert["dst"],
-                "destinationPort": alert["dstPort"],
-                "sourcePort": alert["srcPort"],
-                "protocol": alert["protocol"],
-                "applicationProtocol": alert["applicationProtocol"],
-                "reason": alert["reason"],
-                "action": alert["action"],
-                "commentaire": alert["commentaire"]
+                "cef_version": self.get_key("cef_version", 1),
+                "date_alerte": date_alert,
+                "agent_severity": agent_severity,
+                "device_event_class_id": device_event_class_id,
+                "device_product": self.get_key("device_product", "SIDPS"),
+                "device_vendor": self.get_key("device_vendor", "ArKa"),
+                "device_version": self.get_key("device_version", "vAlpha"),
+                "name": name,
+                "src": src,
+                "dst": dst,
+                "dpt": dpt,
+                "spt": spt,
+                "msg": msg,
+                "proto": proto,
+                "bytesin": bytesin,
+                "bytesout": bytesout,
+                "reason": reason,
+                "act": act
             }
 
             # Exécution de la requête d'insertion
@@ -61,4 +78,4 @@ class Database:
         @param key: clé du paramètre souhaité
         @param default_val: valeur par défaut si la clé n'existe pas"""
 
-        return self.config.get(key, None)
+        return self.config.get(key, default_val)

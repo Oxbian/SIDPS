@@ -9,7 +9,6 @@ import time
 import random
 from datetime import datetime
 
-
 def generate_alert(alert_type):
     # Dictionnaire pour différents types d'alertes réseau et fichiers
     alert_templates = {
@@ -71,7 +70,7 @@ def generate_filename():
 
 def generate_alerts(conn, cursor, main_headers):
     # Récupérer ces données depuis une fonction
-    alertes = ["Syn Flood", "Port Scanning", "Suspicious File Creation", "Critical File Deletion Attempt"]
+    alertes = ["Syn Flood", "Port Scanning"] #, "Suspicious File Creation", "Critical File Deletion Attempt"]
 
     while True:
         data = generate_alert(random.choice(alertes))
@@ -81,15 +80,14 @@ def generate_alerts(conn, cursor, main_headers):
         # Préparer la requête SQL d'insertion
         sql_query = """
         INSERT INTO alertes (
-            cef_version, date_alerte, event_gravite, device_product,
-            device_vendor, device_version, alerte_name, sourceAddress,
-            destinationAddress, destinationPort, sourcePort, protocol,
-            applicationProtocol, reason, action, commentaire
+            cef_version, date_alerte, agent_severity, device_event_class_id,
+            device_product, device_vendor, device_version, name, dst, src,
+            dpt, spt, msg, proto, bytesin, bytesout, reason, act
         ) VALUES (
-            %(cef_version)s, %(date_alerte)s, %(event_gravite)s, %(device_product)s,
-            %(device_vendor)s, %(device_version)s, %(alerte_name)s, %(src)s,
-            %(dst)s, %(destinationPort)s, %(sourcePort)s, %(protocol)s,
-            %(applicationProtocol)s, %(reason)s, %(action)s, %(commentaire)s
+            %(cef_version)s, %(date_alerte)s, %(agent_severity)s, %(device_event_class_id)s,
+            %(device_product)s, %(device_vendor)s, %(device_version)s, %(name)s, %(dst)s, 
+            %(src)s, %(dpt)s, %(spt)s, %(msg)s, %(proto)s, %(bytesin)s, %(bytesout)s,
+            %(reason)s, %(act)s
         );
         """
 
@@ -97,20 +95,22 @@ def generate_alerts(conn, cursor, main_headers):
         params = {
             "cef_version": merged["CEF"],
             "date_alerte": datetime.now(),
-            "event_gravite": int(merged["agent_severity"]),
+            "agent_severity": int(merged["agent_severity"]),
+            "device_event_class_id": None,
             "device_product": merged["Device Product"],
             "device_vendor": merged["Device Vendor"],
             "device_version": merged["Device Version"],
-            "alerte_name": merged["name"],
+            "name": merged["name"],
             "src": merged["src"],
             "dst": merged["dst"],
-            "destinationPort": None,  # A définir si disponible
-            "sourcePort": None,  # A définir si disponible
-            "protocol": "TCP",  # Par défaut, à adapter si besoin
-            "applicationProtocol": "N/A",  # À ajuster en fonction des besoins
-            "reason": "Suspicious activity detected",  # Exemple, à adapter
-            "action": "Alerted",  # Exemple d'action
-            "commentaire": ""  # Optionnel
+            "dpt": None,
+            "spt": None,
+            "msg": "Message",
+            "proto": "TCP",
+            "bytesin": None,
+            "bytesout": None,
+            "reason": "Activité suspecte",
+            "act": "Alert"
         }
 
         # Exécution de la requête d'insertion
@@ -132,17 +132,11 @@ def main():
 
     cursor = conn.cursor()
 
-    # En-têtes généraux
-    CEF_version = 1
-    Device_vendor = "ArKa"
-    Device_product = "SIDPS"
-    Device_version = "vAlpha"
-
     main_headers = {
-        "CEF": CEF_version,
-        "Device Vendor": Device_vendor,
-        "Device Product": Device_product,
-        "Device Version": Device_version
+        "CEF": 1,
+        "Device Vendor": "ArKa",
+        "Device Product": "SIDPS",
+        "Device Version": "vAlpha"
     }
 
     # Lancer la génération d'alertes

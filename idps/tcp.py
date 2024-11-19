@@ -12,6 +12,8 @@ class TCP:
     def add_packet(self, ip_src, port_src, ip_dst, port_dst, flags, timestamp):
         """Ajoute le suivi d'un paquet dans le dictionnaire"""
 
+        timestamp = int(timestamp)
+
         # Initialisation de la liste de paquets pour l'IP source
         if ip_src not in self.packets:
             self.packets[ip_src] = []
@@ -82,7 +84,7 @@ class TCP:
             return None
 
         for i, [p_s, ip_d, p_d, f, stamp] in enumerate(self.packets[ip_src]):
-            if p_s == port_src and ip_d == ip_dst and p_d == port_dst and f in flags:
+            if p_s == port_src and ip_d == ip_dst and p_d == port_dst and flags in f:
                 return i
         return None
 

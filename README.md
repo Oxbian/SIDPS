@@ -24,7 +24,7 @@ La base de données SQL est structurée de la façon suivante:
 
 ## Interface de tests d'alertes
 
-Un script python `tests/cef-generator.py` permet de générer des alertes CEF dans la base de données SQL.  
+Un script python `sql/cef-generator.py` permet de générer des alertes CEF dans la base de données SQL.  
 Ce script peut être utile pour le développement d'interface d'affichage des alertes. Pour l'utiliser il faut une base de donnée sql, et mettre les identifiants dans le script.  
 De plus, ce script à besoin de la librairie `sql` pour pouvoir ajouter / faire des requêtes à la base de données MySQL.  
   
@@ -39,7 +39,7 @@ pip install -r requirements.txt
 Puis executer le script `tests/cef-generator.py` avec le python3 du l'environnement virtuel.
 
 ```bash
-.venv/bin/python3 tests/cef-generator.py
+.venv/bin/python3 sql/cef-generator.py
 ```
 
 ## Demo

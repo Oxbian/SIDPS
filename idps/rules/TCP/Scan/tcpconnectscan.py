@@ -1,3 +1,5 @@
+from datetime import datetime
+
 def rule(packet, tcp_packets, db):
     """Règle TCPConnect Scan:
     Un scan TCP connect va effectuer une connexion TCP en entier sur chaque port scanné.
@@ -8,4 +10,5 @@ def rule(packet, tcp_packets, db):
     seuil = db.get_key("tcpconnectscan_count", 5)
 
     if (tcp_packets.count_packet_of_type("A", time_window) + tcp_packets.count_packet_of_type("RA", time_window)) >= seuil:
-            print(f"Alerte, seuils dépassés, risque de TCPConnectScan")
+        db.send_alert(datetime.now(), 5, None, "TCPConnect Scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de Syn->SynACK->ACK->Reset->ACK et Syn->Reset ACK", act="Alerte") 
+        print(f"Alerte, seuils dépassés, risque de TCPConnectScan")
