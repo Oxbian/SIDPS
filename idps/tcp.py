@@ -22,6 +22,14 @@ class TCP:
             self.packets[ip_src].append([port_src, ip_dst, port_dst, ["S"], timestamp])
             return
 
+        elif flags is None:
+            self.packets[ip_src].append([port_src, ip_dst, port_dst, [""], timestamp])
+            return
+
+        elif flags == "FPU":
+            self.packets[ip_src].append([port_src, ip_dst, port_dst, ["FPU"], timestamp])
+            return
+
         elif flags == "SA":
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S")
 
@@ -77,6 +85,20 @@ class TCP:
             else:
                 self.packets[ip_src].append([port_src, ip_dst, port_dst, ["R"], timestamp])
                 return
+
+        elif flags == "F":
+            i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "A")
+
+            if i is not None:
+                print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
+                self.packets[ip][i][3].append("F")
+                self.packets[ip][i][4] = timestamp
+                return
+            else:
+                self.packets[ip_src].append([port_src, ip_dst, port_dst, ["F"], timestamp])
+                return
+
+        # TODO: ajout flag fin, none, fin urg push
 
     def find_packet_to_replace(self, ip_src, port_src, ip_dst, port_dst, flags):
         """Cherche l'indice et le port de source du paquet dont le flag doit être remplacé"""

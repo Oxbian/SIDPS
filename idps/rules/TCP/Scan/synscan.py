@@ -6,7 +6,7 @@ def rule(packet, tcp_packets, db):
     """Règle SYNScan:
     Un SYNScan va envoyer des requêtes TCP avec le flag SYN
     Si le port est ouvert alors le serveur répondra: Syn ACK, puis le client Reset la connexion
-    Sinon le port est fermé et le serveur répondera: Reset ACK
+    Sinon le port est fermé et le serveur répondra: Reset ACK
     """
     if (rule.cooldown + rule.time_window > time.time()):
         return
@@ -16,8 +16,8 @@ def rule(packet, tcp_packets, db):
         rule.time_window = db.get_key("synscan_time", 180)
         rule.seuil = db.get_key("synscan_count", 5)
 
-    if tcp_packets.count_packet_of_type(["S", "RA"], rule.time_window, True) + tcp_packets.count_packet_of_type(["S", "SA", "RA"], rule.time_window, True) >= rule.seuil:
-        db.send_alert(datetime.now(), 5, None, "Syn scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de Syn->SynACK->Reset ACK et Syn->Reset ACK", act="Alerte")
+    if tcp_packets.count_packet_of_type(["S", "RA"], rule.time_window, True) + tcp_packets.count_packet_of_type(["S", "SA", "R"], rule.time_window, True) >= rule.seuil:
+        db.send_alert(datetime.now(), 5, None, "Syn scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de Syn->SynACK->Reset et Syn->Reset ACK", act="Alerte")
         print(f"Alerte, seuil dépassés, risque de SynScan")
         rule.cooldown = time.time()
 
