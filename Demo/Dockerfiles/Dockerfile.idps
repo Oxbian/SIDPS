@@ -2,8 +2,12 @@ FROM python:alpine3.20
 
 # Installation des paquets nécessaires pour scapy
 RUN apk -U upgrade && \
-    apk add --no-cache libpcap libpcap-dev gcc musl-dev libffi-dev
+    apk add --no-cache libpcap libpcap-dev gcc musl-dev libffi-dev iptables iproute2
 RUN pip install scapy mysql-connector-python
+
+# Copier le script de démarrage
+COPY Demo/Dockerfiles/idps-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 # Copier le script de l'idps
 WORKDIR /app
@@ -14,9 +18,7 @@ COPY idps /app/idps
 # Copie du fichier de configuration
 COPY config.json /app/config.json
 
-# Autres commandes nécessaires pour ton projet
-# Par exemple, pour installer des dépendances :
-# RUN pip install -r /app/idps/requirements.txt (si applicable)
-
+# Utiliser le script comme point d'entrée
+ENTRYPOINT ["/entrypoint.sh"]
 # Commande par défaut
 CMD ["python", "/app/idps/main.py"]

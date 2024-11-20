@@ -1,7 +1,7 @@
 {
 	"rules_dirpath": "/app/idps/rules",
-	"ifaces": ["eth0", "eth1"],
-	"db_host": "172.20.2.10",
+	"ifaces": ["eth1"],
+	"db_host": "172.20.3.10",
 	"db_database": "sidps",
 	"db_user": "sidps",
 	"db_password": "SUPERPASSWORD",
@@ -13,5 +13,13 @@
 	"synscan_time": 180,
 	"synscan_count": 5,
 	"tcpconnectscan_time": 180,
-	"tcpconnectscan_count": 5
+	"tcpconnectscan_count": 5,
+	"ackscan_time": 180,
+	"ackscan_count": 5,
+	"finscan_time": 180,
+	"finscan_count": 5,
+	"nullscan_time": 180,
+	"nullscan_count": 5,
+	"xmasscan_time": 180,
+	"xmasscan_count": 5
 }
