@@ -16,7 +16,11 @@ def rule(packet, tcp_packets, db):
         rule.time_window = db.get_key("nullscan_time", 180)
         rule.seuil = db.get_key("nullscan_count", 5)
 
-    if tcp_packets.count_packet_of_type([""], rule.time_window, True) + tcp_packets.count_packet_of_type(["", "RA"], rule.time_window, True) >= rule.seuil:
+    # Comptage du nombre de scan null acceptés et refusés
+    nulldeny_count = tcp_packets.count_packet_of_type(["", "RA"], rule.time_window, True)
+    nullaccept_count = tcp_packets.count_packet_of_type([""], rule.time_window, True)
+
+    if (nulldeny_count + nulldeny_count >= rule.seuil):
         db.send_alert(datetime.now(), 5, None, "Null scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de None->Reset Ack et None -> rien", act="Alerte")
         print(f"Alerte, seuil dépassés, risque de Null Scan")
         rule.cooldown = time.time()
