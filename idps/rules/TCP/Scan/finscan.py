@@ -16,7 +16,11 @@ def rule(packet, tcp_packets, db):
         rule.time_window = db.get_key("finscan_time", 180)
         rule.seuil = db.get_key("finscan_count", 5)
 
-    if tcp_packets.count_packet_of_type(["F", "RA"], rule.time_window, True) + tcp_packets.count_packet_of_type(["F"], rule.time_window, True) >= rule.seuil:
+    # Comptage du nombre de scan fin acceptés et refusés
+    findeny_count = tcp_packets.count_packet_of_type(["F", "RA"], rule.time_window, True)
+    finaccept_count = tcp_packets.count_packet_of_type(["F"], rule.time_window, True)
+
+    if (findeny_count + finaccept_count >= rule.seuil):
         db.send_alert(datetime.now(), 5, None, "Fin scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de Fin->Reset Ack et Fin->rien", act="Alerte")
         print(f"Alerte, seuil dépassés, risque de Fin Scan")
         rule.cooldown = time.time()

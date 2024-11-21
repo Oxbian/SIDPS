@@ -16,7 +16,11 @@ def rule(packet, tcp_packets, db):
         rule.time_window = db.get_key("ackscan_time", 180)
         rule.seuil = db.get_key("ackscan_count", 5)
 
-    if tcp_packets.count_packet_of_type(["A", "R"], rule.time_window, True) + tcp_packets.count_packet_of_type(["A"], rule.time_window, True) >= rule.seuil:
+    # Comptage nombre de scan ack acceptés et refusés
+    ackdeny_count = tcp_packets.count_packet_of_type(["A", "R"], rule.time_window, True)
+    ackaccept_count = tcp_packets.count_packet_of_type(["A"], rule.time_window, True)
+
+    if (ackaccept_count + ackdeny_count >= rule.seuil):
         db.send_alert(datetime.now(), 5, None, "ACK scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de Ack->Reset et Ack pas de réponse", act="Alerte")
         print(f"Alerte, seuil dépassés, risque d'Ack scan")
         rule.cooldown = time.time()

@@ -55,11 +55,20 @@ Pour lancer cette démonstration, il faudra avoir `docker` & `docker compose` d'
 
 ```bash
 cd Demo/
-docker compose up -d
+./deploy.sh
 ```
 
-## TODO
+La cible (172.20.2.3) héberge un serveur web apache avec la page par défaut sur son port 80.  
+Les conteneurs attaquants disposent tous les deux de nmap et de hping3 pour réaliser des scan et des floods / DOS.  
+  
+Rappel des commandes pour flood avec et sans charge utile avec hping3:
 
-- Noyau d'analyse de l'IDS  
-- Interface web pour visualiser les alertes / rechercher dedans  
+```bash
+hping3 -S --flood IP
+hping3 -S --flood -d TAILLE IP
+```
+
+## TODO:
+
 - Moteur de corrélation des alertes (récupération + renvoi dans MySQL).
+- Moteur de détection par comportement

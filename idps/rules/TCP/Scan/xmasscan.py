@@ -16,7 +16,11 @@ def rule(packet, tcp_packets, db):
         rule.time_window = db.get_key("xmasscan_time", 180)
         rule.seuil = db.get_key("xmasscan_count", 5)
 
-    if tcp_packets.count_packet_of_type(["FPU", "RA"], rule.time_window, True) + tcp_packets.count_packet_of_type(["FPU"], rule.time_window, True) >= rule.seuil:
+    # Comptage du nombre de scan XMAS acceptés et refusés
+    xmasdeny_count = tcp_packets.count_packet_of_type(["FPU", "RA"], rule.time_window, True)
+    xmasaccept_count = tcp_packets.count_packet_of_type(["FPU"], rule.time_window, True)
+
+    if (xmasaccept_count + xmasdeny_count >= rule.seuil):
         db.send_alert(datetime.now(), 5, None, "XMAS scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de Fin Push Urg -> rien et Fin Push Urg->Reset ACK", act="Alerte")
         print(f"Alerte, seuil dépassés, risque de XMAS Scan")
         rule.cooldown = time.time()

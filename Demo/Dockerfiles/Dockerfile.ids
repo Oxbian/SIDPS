@@ -12,7 +12,7 @@ WORKDIR /app
 COPY idps /app/ids
 
 # Copie du fichier de configuration
-COPY config.json /app/config.json
+COPY Demo/config/config-ids.json /app/config.json
 
 # Lancer le script de la sonde IDS
-CMD ["python3", "/app/ids/ids.py"]
+CMD ["python3", "/app/ids/main.py"]
