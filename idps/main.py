@@ -91,10 +91,10 @@ def packet_callback(packet, rules_functions, tcp_packets, db):
     @param db: Objet database pour envoyer des alertes à la BDD
     """
 
-    #print(packet)
+    ##print(packet)
     if IP in packet and TCP in packet:
         tcp_packets.add_packet(packet[IP].src, packet[TCP].sport, packet[IP].dst, packet[TCP].dport, packet[TCP].flags, time.time())
-        print(tcp_packets[packet[IP].src])
+        #print(tcp_packets[packet[IP].src])
         check_frame_w_rules(packet, rules_functions['TCP'], tcp_packets, db)
         tcp_packets.clean_old_packets()
 

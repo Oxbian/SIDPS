@@ -23,6 +23,8 @@ def rule(packet, _, db):
         data_transfer[src_ip]["current"] += payload_size
         data_transfer[src_ip]["daily"] += payload_size
 
+        print(data_transfer[src_ip]["current"])
+
         # Exfiltration de données instantané
         if data_transfer[src_ip]["current"] > rule.seuil_session:
             db.send_alert(
@@ -32,7 +34,7 @@ def rule(packet, _, db):
                 "Exfiltration de données détectée (instantané)", 
                 src_ip,
                 dst_ip, 
-                "TCP",
+                proto = "TCP",
                 reason="Exfiltration de données détectée (instantané)", 
                 act="Alerte"
                 )
@@ -48,7 +50,7 @@ def rule(packet, _, db):
                 "Exfiltration de données détectée (journalière)", 
                 src_ip,
                 dst_ip, 
-                "TCP",
+                proto = "TCP",
                 reason="Exfiltration de données détectée (journalière)", 
                 act="Alerte"
                 )

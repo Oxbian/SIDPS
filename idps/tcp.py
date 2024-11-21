@@ -34,7 +34,7 @@ class TCP:
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S")
 
             if i is not None:
-                print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
+                #print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
                 self.packets[ip][i][3].append("SA")
                 self.packets[ip][i][4] = timestamp
                 return
@@ -48,7 +48,7 @@ class TCP:
                 i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "R")
 
             if i is not None:
-                print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
+                #print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
                 self.packets[ip][i][3].append("A")
                 self.packets[ip][i][4] = timestamp
                 return
@@ -63,7 +63,7 @@ class TCP:
                 i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S")
 
             if i is not None:
-                print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
+                #print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
                 self.packets[ip][i][3].append("RA")
                 self.packets[ip][i][4] = timestamp
                 return
@@ -78,7 +78,7 @@ class TCP:
                 i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S")
 
             if i is not None:
-                print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
+                #print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
                 self.packets[ip][i][3].append("R")
                 self.packets[ip][i][4] = timestamp
                 return
@@ -90,7 +90,7 @@ class TCP:
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "A")
 
             if i is not None:
-                print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
+                #print(f"i: {i}, {ip_src}:{port_src}->{ip_dst}:{port_dst}, paquets: \n{self.packets}")
                 self.packets[ip][i][3].append("F")
                 self.packets[ip][i][4] = timestamp
                 return
