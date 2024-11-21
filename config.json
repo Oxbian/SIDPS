@@ -21,5 +21,11 @@
 	"nullscan_time": 180,
 	"nullscan_count": 5,
 	"xmasscan_time": 180,
-	"xmasscan_count": 5
+	"xmasscan_count": 5,
+	"synflood_time": 60,
+	"synflood_count": 100,
+	"tcpconnectflood_time": 60,
+	"tcpconnectflood_count": 100,
+	"syndos_time": 60,
+	"syndos_count": 100
 }
