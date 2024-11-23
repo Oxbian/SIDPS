@@ -1,13 +1,48 @@
-from scapy.all import sniff, TCP, IP
-from scapy.config import conf
-conf.debug_dissector = 2
-
 import importlib.util
 import os
 import time
 import tcp
 import database
 import json
+import protection
+
+from scapy.all import sniff, TCP, IP
+from scapy.config import conf
+conf.debug_dissector = 2
+
+
+def check_frame_w_rules(packet, rules_functions, objets):
+    """Appliquer chaque règle des fonctions au paquet capturé.
+    @param packet: Paquet actuel à analyser
+    @param rules_functions: liste de fonctions de règles
+    @param objets: Dictionnaire contenant le dictionnaire de config, la liste des paquets tcp précédents,
+    la db, et le gestionnaire de règles Iptables"""
+
+    for rule_func in rules_functions:
+        try:
+            rule_func(packet, objets)
+        except Exception as e:
+            print(f"Erreur lors de l'exécution de la règle : {e}")
+
+
+def packet_callback(packet, rules_functions, objets):
+    """Callback réception d'un paquet
+    @param packet: Paquet actuel à classer
+    @param rules_functions: liste des fonctions de règles
+    @param objets: Dictionnaire contenant le dictionnaire de config, la liste des paquets tcp précédents,
+    la db, et le gestionnaire de règles Iptables"""
+
+    # Nettoyage des règles et paquets TCP dépassé
+    objets["iptables_manager"].del_rules()
+    objets["tcp_packets"].clean_old_packets()
+
+    if IP in packet and TCP in packet:
+        packet_origin = objets["tcp_packets"].add_packet(packet[IP].src, packet[TCP].sport, packet[IP].dst, packet[TCP].dport, packet[TCP].flags, time.time())
+
+        # Stockage du paquet originel lié à ce paquet pour identifier la provenance de l'attaque
+        objets['pkt_origin'] = packet_origin
+
+        check_frame_w_rules(packet, rules_functions['TCP'], objets)
 
 
 def load_rules(rules_dirpath = "/app/idps/rules"):
@@ -68,37 +103,6 @@ def load_rules(rules_dirpath = "/app/idps/rules"):
     return rules_functions
 
 
-def check_frame_w_rules(packet, rules_functions, packets, db):
-    """Appliquer chaque règle des fonctions au paquet capturé.
-    @param packet: Paquet actuel à analyser
-    @param rules_functions: liste de fonctions de règles
-    @param packets: liste des paquets précédents (utile pour TCP)
-    @param db: Objet database pour envoyer les alertes à la BDD
-    """
-
-    for rule_func in rules_functions:
-        try:
-            rule_func(packet, packets, db)
-        except Exception as e:
-            print(f"Erreur lors de l'exécution de la règle : {e}")
-
-
-def packet_callback(packet, rules_functions, tcp_packets, db):
-    """Callback réception d'un paquet
-    @param packet: Paquet actuel à classer
-    @param rules_functions: liste des fonctions de règles
-    @param tcp_packets: Objet contenant une liste des paquets tcp précédents
-    @param db: Objet database pour envoyer des alertes à la BDD
-    """
-
-    #print(packet)
-    if IP in packet and TCP in packet:
-        tcp_packets.add_packet(packet[IP].src, packet[TCP].sport, packet[IP].dst, packet[TCP].dport, packet[TCP].flags, time.time())
-        #print(tcp_packets[packet[IP].src])
-        check_frame_w_rules(packet, rules_functions['TCP'], tcp_packets, db)
-        tcp_packets.clean_old_packets()
-
-
 def read_config(config_filepath='config.json'):
     """Charge les configurations depuis le fichier de config"""
 
@@ -115,29 +119,29 @@ def read_config(config_filepath='config.json'):
 def start_idps():
     """Charge les règles et démarre l'IDPS"""
 
-    print(f"Récupération des configurations")
+    print("Récupération des configurations")
     config = read_config()
-    print(f"Configurations chargées")
+    print("Configurations chargées")
 
-    print(f"Chargement des règles...")
+    print("Chargement des règles...")
     rules_functions = load_rules(config["rules_dirpath"])
-    print(f"Les règles sont chargées")
+    print("Les règles sont chargées")
 
-    print(f"Connexion à la base de données")
+    print("Connexion à la base de données")
     db = database.Database(config)
-    print(f"Connexion réussite à la base de données")
-
-    # Opti possible: charger les règles par protocole, permettant des filtrages et donc optimiser
-    # le nombre de fonctions vérifiant le paquet (snort s'arrête à la première corrélation par exemple)
+    print("Connexion réussite à la base de données")
 
     tcp_packets = tcp.TCP(300)
+    protection_system = protection.Protection(config["protection"])
+
+    objets = {"config": config, "database": db, "tcp_packets": tcp_packets, "iptables_manager": protection_system}
 
     # Lancer scapy & envoyer le paquet à chaque règle de l'IDPS
-    sniff(iface=config["ifaces"], prn=lambda packet: packet_callback(packet, rules_functions, tcp_packets, db), store=0)
+    sniff(iface=config["ifaces"], prn=lambda packet: packet_callback(packet, rules_functions, objets), store=0)
 
 
 def main():
-    print(f"Démarrage de l'IDPS")
+    print("Démarrage de l'IDPS")
     start_idps()
 
 

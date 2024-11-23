@@ -20,15 +20,15 @@ class TCP:
 
         if flags == "S":
             self.packets[ip_src].append([port_src, ip_dst, port_dst, ["S"], timestamp])
-            return
+            return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
         elif flags is None:
             self.packets[ip_src].append([port_src, ip_dst, port_dst, [""], timestamp])
-            return
+            return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
         elif flags == "FPU":
             self.packets[ip_src].append([port_src, ip_dst, port_dst, ["FPU"], timestamp])
-            return
+            return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
         elif flags == "SA":
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "S")
@@ -36,10 +36,10 @@ class TCP:
             if i is not None:
                 self.packets[ip][i][3].append("SA")
                 self.packets[ip][i][4] = timestamp
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst, ip)
             else:
                 self.packets[ip_src].append([port_src, ip_dst, port_dst, ["SA"], timestamp])
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
         elif flags == "A":
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "SA")
@@ -49,10 +49,10 @@ class TCP:
             if i is not None:
                 self.packets[ip][i][3].append("A")
                 self.packets[ip][i][4] = timestamp
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst, ip)
             else:
                 self.packets[ip_src].append([port_src, ip_dst, port_dst, ["A"], timestamp])
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
         elif flags == "RA":
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "A")
@@ -63,10 +63,10 @@ class TCP:
             if i is not None:
                 self.packets[ip][i][3].append("RA")
                 self.packets[ip][i][4] = timestamp
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst, ip)
             else:
                 self.packets[ip_src].append([port_src, ip_dst, port_dst, ["RA"], timestamp])
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
         elif flags == "R":
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "A")
@@ -77,10 +77,10 @@ class TCP:
             if i is not None:
                 self.packets[ip][i][3].append("R")
                 self.packets[ip][i][4] = timestamp
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst, ip)
             else:
                 self.packets[ip_src].append([port_src, ip_dst, port_dst, ["R"], timestamp])
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
         elif flags == "F":
             i, ip = self.find_packet_to_replace(ip_src, port_src, ip_dst, port_dst, "A")
@@ -88,10 +88,10 @@ class TCP:
             if i is not None:
                 self.packets[ip][i][3].append("F")
                 self.packets[ip][i][4] = timestamp
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst, ip)
             else:
                 self.packets[ip_src].append([port_src, ip_dst, port_dst, ["F"], timestamp])
-                return
+                return self.return_origin_packet(ip_src, port_src, ip_dst, port_dst)
 
     def find_packet_to_replace(self, ip_src, port_src, ip_dst, port_dst, flags):
         """Cherche l'indice et le port de source du paquet dont le flag doit être remplacé"""
@@ -147,3 +147,15 @@ class TCP:
         """Retourne la liste des paquets liés à une adresse IP, pour du déboggage"""
 
         return self.packets.get(src_ip, None)
+
+    def return_origin_packet(self, ip_src, port_src, ip_dst, port_dst, ip = None):
+        """Retourne le paquet d'origine par rapport à l'ip de référence"""
+
+        if ip is None:
+            return [ip_src, port_src, ip_dst, port_dst]
+        else:
+            if ip == ip_src:
+                return [ip_src, port_src, ip_dst, port_dst]
+            elif ip == ip_dst:
+                return [ip_dst, port_dst, ip_src, port_src]
+
