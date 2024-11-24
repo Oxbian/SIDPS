@@ -6,7 +6,10 @@ from datetime import datetime
 data_transfer = defaultdict(lambda: {"current": 0, "daily": 0, "last_reset": time.time()})
 
 def rule(packet, _, db):
-    """Règle pour détecter une exfiltration de données importantes."""
+    """
+    Règle pour détecter une exfiltration de données importantes.
+    Actuellement, ne fonctionne pas pour un débit supérieur à 4Mo
+    """
     global data_transfer
 
     if IP in packet:
@@ -22,8 +25,6 @@ def rule(packet, _, db):
 
         data_transfer[src_ip]["current"] += payload_size
         data_transfer[src_ip]["daily"] += payload_size
-
-        print(data_transfer[src_ip]["current"])
 
         # Exfiltration de données instantané
         if data_transfer[src_ip]["current"] > rule.seuil_session:
@@ -58,5 +59,5 @@ def rule(packet, _, db):
 
 
 rule.reset_time = 24 * 3600  # 24 heures en secondes
-rule.seuil_session = 5 * 1024 * 1024 * 1024  # 5 Go en octets
+rule.seuil_session = 0.5 * 1024 * 1024 * 1024  # 500 Mo en octets
 rule.seuil_journalier = 50 * 1024 * 1024 * 1024  # 50 Go en octets
