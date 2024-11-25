@@ -48,7 +48,7 @@
             }
             $request .= ' WHERE ' . implode(' AND ', $conditions);
         }
-        
+
         $statement = $db->prepare($request);
         $statement->execute($params);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -84,6 +84,8 @@
     }
     return $result;
   }
+
+  
   //----------------------------------------------------------------------------
   //--- dbAddCTweet ------------------------------------------------------------
   //----------------------------------------------------------------------------

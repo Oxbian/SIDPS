@@ -1,7 +1,12 @@
 'use strict';
 
 // initialisation 
-ajaxRequest('GET', 'php/request.php/alertes/', displayAlerts);
+let previousAlerts = [];
+// ajaxRequest('GET', 'php/request.php/alertes/', displayAlerts);
+setInterval(() => {
+  // Effectuer une requête AJAX pour récupérer les nouvelles alertes
+  ajaxRequest('GET', 'php/request.php/alertes/', CheckNewAlerts);
+}, 1000);
 ajaxRequest('GET', 'php/request.php/devices/', fillSelectDevice);
 fillSelectRisque();
 
@@ -11,8 +16,6 @@ $('#filter-button').click(() => {
   const params = []; // Initialise le tableau des paramètres
   const device = $('#device-select').val();
   const alertlvl = $('#risque-select').val();
-  console.log("device =" + device);
-  console.log("alertlvl =" + alertlvl);
   
   // Ajouter les paramètres uniquement s'ils sont définis
   if (device) params.push(`device_product=${encodeURIComponent(device)}`);
@@ -83,4 +86,15 @@ function fillSelectDevice(devices) {
 function fillSelectRisque() {
   for (let i = 1; i <= 10; i++)
     $('#risque-select').append($('<option>').text(i).val(i));
+}
+
+function CheckNewAlerts(newAlerts) {
+  // Comparer les nouvelles alertes avec les anciennes
+  if (JSON.stringify(previousAlerts) !== JSON.stringify(newAlerts)) {
+      // Si les alertes ont changé, mettre à jour l'interface
+      displayAlerts(newAlerts);
+      
+      // Mettre à jour les alertes précédentes
+      previousAlerts = newAlerts;
+  }
 }
