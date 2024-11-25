@@ -1,5 +1,8 @@
 <?php
   require_once('constants.php');
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
 
   //----------------------------------------------------------------------------
   //--- dbConnect --------------------------------------------------------------
@@ -28,14 +31,27 @@
   // Function to get all alertes 
   // \param db The connected database.
   // \return The list of alertes.
-  function dbRequestAlerts($db)
+  function dbRequestAlerts($db, $filtres = null)
   {
     try
     {
       $request = 'SELECT * FROM alertes';
-      $statement = $db->prepare($request);
-      $statement->execute();
-      $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+        $params = [];
+
+
+        // Si $filtres est non nul et non vide, appliquez les conditions
+        if (isset($filtres)) {
+            $conditions = [];
+            foreach ($filtres as $colonne => $valeur) {
+                $conditions[] = "$colonne = :$colonne";
+                $params[":$colonne"] = $valeur;
+            }
+            $request .= ' WHERE ' . implode(' AND ', $conditions);
+        }
+        
+        $statement = $db->prepare($request);
+        $statement->execute($params);
+        $result = $statement->fetchAll(PDO::FETCH_ASSOC);
     }
     catch (PDOException $exception)
     {
@@ -45,6 +61,29 @@
     return $result;
   }
 
+    //----------------------------------------------------------------------------
+  //--- dbRequestDevices --------------------------------------------------------
+  //----------------------------------------------------------------------------
+  // Function to get all alertes 
+  // \param db The connected database.
+  // \return The list of alertes.
+  function dbRequestDevices($db)
+  {
+    try
+    {
+      $request = 'SELECT device_product FROM alertes GROUP BY device_product;';
+      $statement = $db->prepare($request);
+      $statement->execute();
+      $result = $statement->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    catch (PDOException $exception)
+    {
+      error_log('Request error: '.$exception->getMessage());
+      return false;
+    }
+    return $result;
+  }
   //----------------------------------------------------------------------------
   //--- dbAddCTweet ------------------------------------------------------------
   //----------------------------------------------------------------------------
