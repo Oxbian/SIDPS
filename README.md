@@ -61,6 +61,12 @@ cd Demo/
 La cible (172.20.2.3) héberge un serveur web apache avec la page par défaut sur son port 80.  
 Les conteneurs attaquants disposent tous les deux de nmap et de hping3 pour réaliser des scan et des floods / DOS.  
   
+Des attaques peuvent être réalisés depuis l'attaquant1 ou l'attaquant2 en se connectant au shell des ces 2 conteneurs. Ces conteneurs disposent de nmap et de hping3 par défaut.  
+
+```bash
+docker exec -it attaquant1 sh
+```
+
 Rappel des commandes pour flood avec et sans charge utile avec hping3:
 
 ```bash
@@ -68,7 +74,4 @@ hping3 -S --flood IP
 hping3 -S --flood -d TAILLE IP
 ```
 
-## TODO:
-
-- Moteur de corrélation des alertes (récupération + renvoi dans MySQL).
-- Moteur de détection par comportement
+Les alertes sont visibles sur l'interface web qui se trouve à l'adresse `http://172.20.3.3:500`.

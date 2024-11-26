@@ -1,3 +1,0 @@
-script ajax pour reload la page tte les Xs ? 
-adresse de destination 
-bouton visualiser

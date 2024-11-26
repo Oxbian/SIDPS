@@ -1,0 +1,5 @@
+FROM eriksoderblom/alpine-apache-php:latest
+
+# Copie des fichiers du projet
+COPY web/ /htdocs/
+

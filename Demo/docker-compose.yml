@@ -90,6 +90,20 @@ services:
         ipv4_address: 172.20.3.10
     restart: unless-stopped
 
+  # Interface d'affichage des alertes
+  web_ui:
+    build:
+      context: ..
+      dockerfile: Demo/Dockerfiles/Dockerfile.web
+    container_name: web
+    ports:
+      - "500:80"
+    networks:
+      net_data:
+        ipv4_address: 172.20.3.3
+    restart: unless-stopped
+
+
 networks:
   net_public:
     driver: bridge
