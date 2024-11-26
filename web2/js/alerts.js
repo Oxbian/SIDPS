@@ -115,6 +115,7 @@ function sortTable(columnName) {
 // Ajouter des gestionnaires d'événements de clic sur les en-têtes de colonnes
 $('th').click(function() {
   let columnName = $(this).text().trim().toLowerCase().replace(/ /g, '_'); // Convertir le texte de l'en-tête en nom de colonne
+  console.log(columnName);
   switch (columnName) {
     case 'n°':
       columnName = 'id';
@@ -125,7 +126,7 @@ $('th').click(function() {
     case 'nom_alerte':
       columnName = 'name';
       break;
-    case 'appareil_de_detection':
+    case 'appareil_de_détection':
       columnName = 'device_product';
       break;
     case 'adresse_source':
