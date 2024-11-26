@@ -17,17 +17,16 @@ $requestMethod = $_SERVER['REQUEST_METHOD'];
 $request = $_SERVER['PATH_INFO'];
 $request = explode('/', $request);
 
-
 if ($request[1] == 'alertes') {
     if ($requestMethod == 'GET') {
 
-        $orderby = isset($_GET['orderby']) ? $_GET['orderby'] : 'date_alerte'; // Par défaut, trier par date_alerte
-        $order = isset($_GET['order']) && ($_GET['order'] == 'desc') ? 'DESC' : 'ASC'; // Par défaut, ordre croissant
+        $orderby = isset($_GET['orderby']) ? $_GET['orderby'] : 'date_alerte'; 
+        $order = isset($_GET['order']) && ($_GET['order'] == 'desc') ? 'DESC' : 'ASC';
 
         $filtresArray = [];
-        if(isset($_GET['device_product']))
+        if (isset($_GET['device_product']))
             $filtresArray['device_product'] = $_GET['device_product'];
-        if(isset($_GET['agent_severity']))
+        if (isset($_GET['agent_severity']))
             $filtresArray['agent_severity'] = $_GET['agent_severity'];
 
         if (!empty($filtresArray)) {
@@ -35,12 +34,6 @@ if ($request[1] == 'alertes') {
         } else {
             $data = dbRequestAlerts($db, null, $orderby, $order);
         }
-    }
-
-    if ($requestMethod == 'PUT') {
-        parse_str(file_get_contents('php://input'), $_PUT);
-        if ($id != '' && isset($_PUT['login']) && isset($_PUT['text']))
-            $data = dbModifyTweet($db, $id, $_PUT['login'], strip_tags($_PUT['text']));
     }
 }
 
