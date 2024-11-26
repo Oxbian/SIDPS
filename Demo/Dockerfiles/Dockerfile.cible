@@ -1,15 +1,9 @@
-FROM python:alpine3.20
+FROM httpd:alpine
 
-# Installation des paquets nécessaires pour scapy
-RUN apk -U upgrade && \
-    apk add --no-cache libpcap libpcap-dev gcc musl-dev libffi-dev iproute2
-RUN pip install scapy
+# Installation des paquets nécessaire pour le routage
+RUN apk -U upgrade && apk add --no-cache iproute2
 
 COPY Demo/Dockerfiles/cible-entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 ENTRYPOINT ["/entrypoint.sh"]
-# Copier le script de détection d'attaques
-#COPY cible.py /cible.py
-
-# Lancer le script de détection
-#CMD ["python", "/cible.py"]
+CMD ["httpd-foreground"]

@@ -2,7 +2,7 @@ from datetime import datetime
 import time
 
 
-def rule(packet, tcp_packets, db):
+def rule(packet, objets):
     """Règle SYN Scan:
     Un SYNScan va envoyer des requêtes TCP avec le flag SYN
     Si le port est ouvert alors le serveur répondra: Syn ACK, puis le client Reset la connexion
@@ -12,17 +12,19 @@ def rule(packet, tcp_packets, db):
         return
 
     # Vérification si nécessaire de récupérer les variables depuis la config
-    if (rule.seuil == 0 and rule.time_window == 0):
-        rule.time_window = db.get_key("synscan_time", 180)
-        rule.seuil = db.get_key("synscan_count", 5)
+    if (rule.seuil == 0 and rule.time_window == 0 and rule.ban_time == 0):
+        rule.time_window = objets["config"].get("synscan_time", 180)
+        rule.seuil = objets["config"].get("synscan_count", 5)
+        rule.ban_time = objets["config"].get("synscan_bantime", 300)
 
     # Comptage du nombre de scan syn acceptés et refusés
-    syndeny_count = tcp_packets.count_packet_of_type(["S", "RA"], rule.time_window, True)
-    synaccept_count = tcp_packets.count_packet_of_type(["S", "SA", "R"], rule.time_window, True)
+    syndeny_count = objets["tcp_packets"].count_packet_of_type(["S", "RA"], rule.time_window, True)
+    synaccept_count = objets["tcp_packets"].count_packet_of_type(["S", "SA", "R"], rule.time_window, True)
 
     if (synaccept_count + syndeny_count >= rule.seuil):
-        db.send_alert(datetime.now(), 5, None, "Syn scan", packet['IP'].src, packet['IP'].dst, proto="TCP", reason="Détection de nombreux patterns de Syn->SynACK->Reset et Syn->Reset ACK", act="Alerte")
-        print(f"Alerte, seuil dépassés, risque de SynScan")
+        objets["database"].send_alert(datetime.now(), 5, None, "Syn scan", objets["pkt_origin"][0], objets["pkt_origin"][2], proto="TCP", reason="Détection de nombreux patterns de Syn->SynACK->Reset et Syn->Reset ACK", act="Alerte")
+        objets["iptables_manager"].add_rule("/sbin/iptables -I FORWARD -s " + objets["pkt_origin"][0] + " -j DROP", rule.ban_time)
+        print("Alerte, seuil dépassés, risque de SynScan")
         rule.cooldown = time.time()
 
 
@@ -30,3 +32,4 @@ def rule(packet, tcp_packets, db):
 rule.cooldown = 0
 rule.time_window = 0
 rule.seuil = 0
+rule.ban_time = 0

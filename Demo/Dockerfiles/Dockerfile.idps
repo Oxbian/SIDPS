@@ -16,7 +16,7 @@ WORKDIR /app
 COPY idps /app/idps
 
 # Copie du fichier de configuration
-COPY config.json /app/config.json
+COPY Demo/config/config-idps.json /app/config.json
 
 # Utiliser le script comme point d'entrée
 ENTRYPOINT ["/entrypoint.sh"]

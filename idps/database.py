@@ -46,13 +46,13 @@ class Database:
 
             # Paramètres pour la requête SQL
             params = {
-                "cef_version": self.get_key("cef_version", 1),
+                "cef_version": self.config.get("cef_version", 1),
                 "date_alerte": date_alert,
                 "agent_severity": agent_severity,
                 "device_event_class_id": device_event_class_id,
-                "device_product": self.get_key("device_product", "SIDPS"),
-                "device_vendor": self.get_key("device_vendor", "ArKa"),
-                "device_version": self.get_key("device_version", "vAlpha"),
+                "device_product": self.config.get("device_product", "SIDPS"),
+                "device_vendor": self.config.get("device_vendor", "ArKa"),
+                "device_version": self.config.get("device_version", "vAlpha"),
                 "name": name,
                 "src": src,
                 "dst": dst,
@@ -72,10 +72,3 @@ class Database:
             cursor.close()
         except mysql.connector.Error as err:
             print("Erreur lors de l'envoi de l'alerte: {}".format(err))
-
-    def get_key(self, key, default_val):
-        """Donne le contenue d'un paramètre spécifique de la config
-        @param key: clé du paramètre souhaité
-        @param default_val: valeur par défaut si la clé n'existe pas"""
-
-        return self.config.get(key, default_val)
