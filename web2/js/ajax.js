@@ -8,8 +8,7 @@
 // \param url The url with the data.
 // \param callback The callback to call where the request is successful.
 // \param data The data associated with the request.
-function ajaxRequest(type, url, callback, data = null)
-{
+function ajaxRequest(type, url, callback, data = null) {
   let xhr;
 
   // Create XML HTTP request.
@@ -20,10 +19,8 @@ function ajaxRequest(type, url, callback, data = null)
   xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
 
   // Add the onload function.
-  xhr.onload = () =>
-  {
-    switch (xhr.status)
-    {
+  xhr.onload = () => {
+    switch (xhr.status) {
       case 200:
       case 201:
         console.log(xhr.responseText);
@@ -43,8 +40,7 @@ function ajaxRequest(type, url, callback, data = null)
 //------------------------------------------------------------------------------
 // Display an error message accordingly to an error code.
 // \param errorCode The error code (HTTP status for example).
-function httpErrors(errorCode)
-{
+function httpErrors(errorCode) {
   let messages =
   {
     400: 'Requête incorrecte',
@@ -56,12 +52,10 @@ function httpErrors(errorCode)
   };
 
   // Display error.
-  if (errorCode in messages)
-  {
+  if (errorCode in messages) {
     $('#errors').html('<strong>' + messages[errorCode] + '</strong>');
     $('#errors').show();
-    setTimeout(() =>
-    {
+    setTimeout(() => {
       $('#errors').hide();
     }, 5000);
   }

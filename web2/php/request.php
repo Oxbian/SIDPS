@@ -20,7 +20,7 @@ $request = explode('/', $request);
 if ($request[1] == 'alertes') {
     if ($requestMethod == 'GET') {
 
-        $orderby = isset($_GET['orderby']) ? $_GET['orderby'] : 'date_alerte'; 
+        $orderby = isset($_GET['orderby']) ? $_GET['orderby'] : 'date_alerte';
         $order = isset($_GET['order']) && ($_GET['order'] == 'desc') ? 'DESC' : 'ASC';
 
         $filtresArray = [];
