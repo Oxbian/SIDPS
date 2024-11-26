@@ -31,7 +31,7 @@
   // Function to get all alertes 
   // \param db The connected database.
   // \return The list of alertes.
-  function dbRequestAlerts($db, $filtres = null)
+  function dbRequestAlerts($db, $filtres = null, $orderby, $order)
   {
     try
     {
@@ -49,6 +49,8 @@
             $request .= ' WHERE ' . implode(' AND ', $conditions);
         }
 
+        $request .= " ORDER BY $orderby $order";
+        
         $statement = $db->prepare($request);
         $statement->execute($params);
         $result = $statement->fetchAll(PDO::FETCH_ASSOC);
@@ -85,7 +87,7 @@
     return $result;
   }
 
-  
+
   //----------------------------------------------------------------------------
   //--- dbAddCTweet ------------------------------------------------------------
   //----------------------------------------------------------------------------

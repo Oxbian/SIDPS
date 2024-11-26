@@ -2,14 +2,16 @@
 
 // initialisation 
 let previousAlerts = [];
+let sortOrder = {};
+ajaxRequest('GET', 'php/request.php/alertes/', CheckNewAlerts);
+
 // ajaxRequest('GET', 'php/request.php/alertes/', displayAlerts);
 setInterval(() => {
-  // Effectuer une requête AJAX pour récupérer les nouvelles alertes
   ajaxRequest('GET', 'php/request.php/alertes/', CheckNewAlerts);
-}, 1000);
+  // Effectuer une requête AJAX pour récupérer les nouvelles alertes
+}, 10000);
 ajaxRequest('GET', 'php/request.php/devices/', fillSelectDevice);
 fillSelectRisque();
-
 
 // filtrage
 $('#filter-button').click(() => {
@@ -36,22 +38,16 @@ $('#filter-button').click(() => {
 }
 );
 
-$('#tweets').on('click', '.mod', () => {
-  ajaxRequest('PUT', 'php/request.php/tweets/' +
-    $(event.target).closest('.mod').attr('value'), () => {
-    ajaxRequest('GET', 'php/request.php/tweets/', displayTweets);
-  }, 'login=' + login + '&text=' + prompt('Nouveau tweet :'));
-}
-);
-$('#tweets').on('click', '.del', () => {
-  console.log('delete');
-  ajaxRequest('DELETE', 'php/request.php/tweets/' +
-    $(event.target).closest('.del').attr('value') + '?login=' + login, () => {
-    ajaxRequest('GET', 'php/request.php/tweets/', displayTweets);
-  }
-  );
-}
-);
+
+// $('#tweets').on('click', '.del', () => {
+//   console.log('delete');
+//   ajaxRequest('DELETE', 'php/request.php/tweets/' +
+//     $(event.target).closest('.del').attr('value') + '?login=' + login, () => {
+//     ajaxRequest('GET', 'php/request.php/tweets/', displayTweets);
+//   }
+//   );
+// }
+// );
 
 //------------------------------------------------------------------------------
 //--- displayAlerts ------------------------------------------------------------
@@ -98,3 +94,52 @@ function CheckNewAlerts(newAlerts) {
       previousAlerts = newAlerts;
   }
 }
+
+// Fonction pour trier les alertes
+function sortTable(columnName) {
+  const currentOrder = sortOrder[columnName] || 'asc';
+  const newOrder = currentOrder === 'asc' ? 'desc' : 'asc';
+  sortOrder[columnName] = newOrder;
+
+  // Construire les paramètres de la requête pour l'orderby
+  const params = [];
+  params.push(`orderby=${columnName}`);
+  params.push(`order=${newOrder}`);
+
+  const url = `php/request.php/alertes/?${params.join('&')}`;
+
+  // Effectuer la requête AJAX pour récupérer les alertes triées
+  ajaxRequest('GET', url, displayAlerts);
+}
+
+// Ajouter des gestionnaires d'événements de clic sur les en-têtes de colonnes
+$('th').click(function() {
+  let columnName = $(this).text().trim().toLowerCase().replace(/ /g, '_'); // Convertir le texte de l'en-tête en nom de colonne
+  switch (columnName) {
+    case 'n°':
+      columnName = 'id';
+      break;
+    case 'date':
+      columnName = 'date_alerte';
+      break;
+    case 'nom_alerte':
+      columnName = 'name';
+      break;
+    case 'appareil_de_detection':
+      columnName = 'device_product';
+      break;
+    case 'adresse_source':
+      columnName = 'src';
+      break;
+    case 'adresse_destination':
+      columnName = 'dst';
+      break;
+    case 'niveau_d\'alerte':
+      columnName = 'agent_severity';
+      break;
+    case 'raison':
+      columnName = 'reason';
+      break;
+  }
+  sortTable(columnName);
+});

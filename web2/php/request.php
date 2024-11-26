@@ -21,17 +21,19 @@ $request = explode('/', $request);
 if ($request[1] == 'alertes') {
     if ($requestMethod == 'GET') {
 
+        $orderby = isset($_GET['orderby']) ? $_GET['orderby'] : 'date_alerte'; // Par défaut, trier par date_alerte
+        $order = isset($_GET['order']) && ($_GET['order'] == 'desc') ? 'DESC' : 'ASC'; // Par défaut, ordre croissant
+
         $filtresArray = [];
         if(isset($_GET['device_product']))
             $filtresArray['device_product'] = $_GET['device_product'];
         if(isset($_GET['agent_severity']))
             $filtresArray['agent_severity'] = $_GET['agent_severity'];
-        error_log('filtres array : ' . json_encode($filtresArray));
 
         if (!empty($filtresArray)) {
-            $data = dbRequestAlerts($db, $filtresArray);
+            $data = dbRequestAlerts($db, $filtresArray, $orderby, $order);
         } else {
-            $data = dbRequestAlerts($db, null);
+            $data = dbRequestAlerts($db, null, $orderby, $order);
         }
     }
 
