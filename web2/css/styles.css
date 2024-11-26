@@ -11,3 +11,12 @@ section {
     padding-top: 9rem;
     padding-bottom: 9rem;
 }
+th{
+    border-color: black;
+    border-style: solid;
+    border-width: 1px;
+}
+th:hover {
+    background-color: #4fa9e6;
+    cursor: pointer;
+}
