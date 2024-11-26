@@ -1,0 +1,9 @@
+FROM httpd:alpine
+
+# Installation des paquets nécessaire pour le routage
+RUN apk -U upgrade && apk add --no-cache iproute2
+
+COPY Demo/Dockerfiles/cible-entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["httpd-foreground"]

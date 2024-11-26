@@ -1,0 +1,18 @@
+FROM python:alpine3.20
+
+# Installation des paquets nécessaires pour scapy
+RUN apk -U upgrade && \
+    apk add --no-cache libpcap libpcap-dev gcc musl-dev libffi-dev
+RUN pip install scapy mysql-connector-python
+
+# Copier le script de l'idps
+WORKDIR /app
+
+# Copier le contenu du répertoire 'idps' du contexte de build vers '/app/idps' dans le conteneur
+COPY idps /app/ids
+
+# Copie du fichier de configuration
+COPY Demo/config/config-ids.json /app/config.json
+
+# Lancer le script de la sonde IDS
+CMD ["python3", "/app/ids/main.py"]

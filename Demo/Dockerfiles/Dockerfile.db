@@ -1,0 +1,5 @@
+FROM mysql:latest
+
+# Copier le script SQL dans l'image
+COPY sql/init.sql /docker-entrypoint-initdb.d/
+
